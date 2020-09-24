@@ -15,6 +15,7 @@ module app;
 
 import std.stdio;
 import std.datetime.stopwatch;
+import std.getopt;
 import check;
 
 enum string prog_name = "mesoncheck";
@@ -23,13 +24,32 @@ enum string prog_author = "Brian Stephenson";
 enum string prog_year = "2020";
 enum double time_divisor = 10_000_000.0;
 
-void main() {
+void main(string[] args) {
+	uint rc = 0;
    uint error_count;
+   uint thrs = 2;
    auto sw = StopWatch(AutoStart.yes);
    writefln("%s (v. %s)", prog_name, prog_version);
-   writefln("(c) %s, %s\n", prog_year, prog_author);
+   writefln("(c) %s, %s", prog_year, prog_author);
 
-   error_count = check_database();
+   try {
+      auto arginfo = getopt(args, "threads", &thrs);
+   }
+   catch (Exception e) {
+      writefln("\n%s\n", e.msg);
+   }
+
+   if (thrs > 3)
+   {
+   	thrs = 3;
+   	writeln("\nERROR: Number of threads capped at 3\n");
+   }
+   
+   writefln("\t--threads = %d\n", thrs);
+   
+   
+
+   error_count = check_database(thrs);
 
    sw.stop();
    auto seconds = sw.peek().total!"hnsecs" / time_divisor;
