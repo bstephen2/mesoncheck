@@ -12,7 +12,10 @@ public:
       return;
    }
 
-   synchronized void add_message(message mess) {
+   void add_message(message mess) {
+   
+   	messages ~= mess;
+   	
       return;
    }
 
