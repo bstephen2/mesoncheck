@@ -1,6 +1,9 @@
 module check;
 
 import std.parallelism;
+import core.atomic;
+import std.stdio;
+import std.process;
 
 import abstracted;
 import award;
@@ -15,15 +18,28 @@ import afters;
 import magranges;
 import nots;
 import cants;
+import cabs;
 import sants;
+import sabs;
 import vnots;
-import logger;
 import constant;
 
+void display_status(uint id, string[] log, string name) {
+
+   synchronized {
+      writefln("\n%d) %d ==> %s\n", thisThreadID, id, name);
+
+      foreach (ref str; log) {
+         writefln("\t%s", str);
+      }
+   }
+
+   return;
+}
+
 uint check_database() {
-   logger log = new logger();
-   uint rc = 0;
-   uint function(uint, logger)[] func_array;
+   shared uint rc = 0;
+   uint function(uint)[] func_array;
    func_array ~= &check_abstracted;
    func_array ~= &check_award;
    func_array ~= &check_classol;
@@ -37,11 +53,14 @@ uint check_database() {
    func_array ~= &check_magranges;
    func_array ~= &check_nots;
    func_array ~= &check_cants;
+   func_array ~= &check_cabs;
    func_array ~= &check_sants;
+   func_array ~= &check_sabs;
    func_array ~= &check_vnots;
 
    foreach (uint i, func; parallel(func_array)) {
-      uint r = func(i, log);
+      uint r = func(i);
+      core.atomic.atomicOp!"+="(rc, r);
    }
 
    return rc;

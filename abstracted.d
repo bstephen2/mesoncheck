@@ -1,17 +1,41 @@
 module abstracted;
 
-import message;
-import logger;
+import std.array : array;
+import std.variant;
+import std.conv;
+import mysql;
+
 import constant;
+import check;
 
-uint check_abstracted(uint id, logger log) {
+uint check_abstracted(uint id) {
    uint rc;
-   message mess;
+   string[] log;
+   Connection conn;
+   ResultRange range;
 
-   mess = new message(id, 1, "Checking table Abstracted ...");
-   log.add_message(mess);
-   mess = new message(id, 0, null);
-   log.add_message(mess);
+   auto connectionStr = "host=localhost;port=3306;user=bstephen;pwd=rice37;db=meson";
+   conn = new Connection(connectionStr);
+   scope (exit)
+      conn.close();
+
+   /*
+     *	(1)	Check that the SID of every record in table Abstracted appears
+     *			in table Source.
+     */
+
+   string sql_1 = "SELECT abstracted.sid FROM abstracted LEFT JOIN source ON abstracted.sid = source.sid WHERE source.sid IS NULL ORDER BY abstracted.sid";
+
+   range = conn.query(sql_1);
+
+   foreach (Row row; range) {
+      string mess = "SID " ~ to!string(row[0]) ~ " not in table Source!";
+      log ~= mess;
+   }
+
+   range.close();
+
+   display_status(id, log, "check_abstracted");
 
    return rc;
 }
