@@ -2,6 +2,7 @@ module nots;
 
 import std.array : array;
 import std.variant;
+import std.conv;
 import mysql;
 
 import constant;
@@ -11,11 +12,11 @@ uint check_nots(uint id) {
    uint rc;
    string[] log;
    Connection conn;
+   ResultRange range;
 
    auto connectionStr = "host=localhost;port=3306;user=bstephen;pwd=rice37;db=meson";
    conn = new Connection(connectionStr);
-   scope (exit)
-      conn.close();
+   conn.close();
 
    display_status(id, log, "check_nots");
 

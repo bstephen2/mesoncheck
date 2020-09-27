@@ -1,4 +1,4 @@
-module magranges;
+module todoquote;
 
 import std.array : array;
 import std.variant;
@@ -8,17 +8,19 @@ import mysql;
 import constant;
 import check;
 
-uint check_magranges(uint id) {
+uint check_todoquote(uint id) {
    uint rc;
    string[] log;
    Connection conn;
    ResultRange range;
-   string sql_1 = "SELECT jos_meson_magranges.mid FROM jos_meson_magranges LEFT JOIN source " ~ "ON jos_meson_magranges.mid = source.sid " ~ "WHERE source.sid IS NULL " ~ "ORDER BY jos_meson_magranges.mid";
+   string sql_1 = "SELECT todoquote.mid FROM todoquote LEFT JOIN source "
+      ~ "ON todoquote.mid = source.sid "
+      ~ "WHERE source.sid IS NULL " ~ "ORDER BY todoquote.mid";
 
    auto connectionStr = "host=localhost;port=3306;user=bstephen;pwd=rice37;db=meson";
    conn = new Connection(connectionStr);
 
-   /+	(1)	Check that the MID of every record in table jos_meson_magranges appears
+   /+	(1)	Check that the MID of every record in table todoquote appears
 	 +			in table Source.
 	 +/
 
@@ -33,7 +35,7 @@ uint check_magranges(uint id) {
    range.close();
    conn.close();
 
-   display_status(id, log, "check_magranges");
+   display_status(id, log, "check_todoquote");
 
    return rc;
 }

@@ -16,6 +16,7 @@ import source;
 import versions;
 import afters;
 import magranges;
+import todoquote;
 import nots;
 import cants;
 import cabs;
@@ -24,10 +25,22 @@ import sabs;
 import vnots;
 import constant;
 
+shared uint[ulong] tids;
+shared uint newtid;
+
 void display_status(uint id, string[] log, string name) {
 
    synchronized {
-      writefln("\n%d) %d ==> %s\n", thisThreadID, id, name);
+      ulong ltid = thisThreadID;
+      uint* ptr = cast(uint*)(ltid in tids);
+
+      if (ptr is null) {
+         core.atomic.atomicOp!"+="(newtid, 1);
+         tids[ltid] = newtid;
+         ptr = cast(uint*)&newtid;
+      }
+
+      writefln("\n%2d) %2d ==> %s\n", *ptr, id, name);
 
       foreach (ref str; log) {
          writefln("\t%s", str);
@@ -51,6 +64,7 @@ uint check_database() {
    func_array ~= &check_versions;
    func_array ~= &check_afters;
    func_array ~= &check_magranges;
+   func_array ~= &check_todoquote;
    func_array ~= &check_nots;
    func_array ~= &check_cants;
    func_array ~= &check_cabs;
