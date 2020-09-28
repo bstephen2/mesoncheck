@@ -13,56 +13,29 @@ uint check_award(uint id) {
    string[] log;
    Connection conn;
    ResultRange range;
+   string sql_1 = "SELECT award.aid, award.name FROM award LEFT JOIN problem "
+      ~ "ON award.aid = problem.aid "
+      ~ "WHERE problem.aid IS NULL " ~ "ORDER BY award.aid";
 
    auto connectionStr = "host=localhost;port=3306;user=bstephen;pwd=rice37;db=meson";
    conn = new Connection(connectionStr);
+
+   /+	(1)	Check that the AID of every record in table Award appears in
+	 +			table Problem.
+	 +/
+
+   range = conn.query(sql_1);
+
+   foreach (Row row; range) {
+      string mess = "AID " ~ to!string(row[0]) ~ "(" ~ to!string(row[1]) ~ ") not in table Problem!";
+      log ~= mess;
+      rc++;
+   }
+
+   range.close();
    conn.close();
 
    display_status(id, log, "check_award");
 
    return rc;
 }
-/+
-sub check_award {
-    my ( $dbh, $rid, $tid ) = @_;
-    my $count = 0;
-    my $sth;
-    my $r_row;
-    my $aid;
-    my $name;
-    my $ar;
-    my $mess;
-    my $caw_check_1 =
-        'SELECT award.aid, award.name FROM award LEFT JOIN problem '
-      . 'ON award.aid = problem.aid '
-      . 'WHERE problem.aid IS NULL '
-      . 'ORDER BY award.aid';
-
-    $ar = [ $rid, 1, 'Checking table Award ...', $tid ];
-    $message_queue->enqueue($ar);
-
-    #	(1)	Check that the AID of every record in table Award appears in
-    #			table Problem.
-
-    $sth = $dbh->prepare($caw_check_1);
-    $sth->execute();
-
-    while ( $r_row = $sth->fetchrow_arrayref ) {
-        $aid  = $r_row->[0];
-        $name = $r_row->[1];
-        $mess = sprintf 'AID %d (%s) not in table Problem!', $aid, $name;
-        $ar   = [ $rid, 2, $mess ];
-        $message_queue->enqueue($ar);
-
-        #print("\t\tAID $aid ($name) not in table Problem!\n");
-        $count++;
-    }
-
-    $sth->finish();
-
-    $ar = [ $rid, 0 ];
-    $message_queue->enqueue($ar);
-
-    return $count;
-}
-+/
