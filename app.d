@@ -28,7 +28,7 @@ void main(string[] args) {
    uint error_count;
    auto sw = StopWatch(AutoStart.yes);
    writefln("%s (v. %s)", prog_name, prog_version);
-   writefln("(c) %s, %s", prog_year, prog_author);
+   writefln("(c) %s, %s\n", prog_year, prog_author);
 
    error_count = check_database();
 

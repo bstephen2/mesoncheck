@@ -40,10 +40,14 @@ void display_status(uint id, string[] log, string name) {
          ptr = cast(uint*)&newtid;
       }
 
-      writefln("\n%2d) %2d ==> %s\n", *ptr, id, name);
+      writefln("%2d) %2d ==> %s\n", *ptr, id, name);
 
       foreach (ref str; log) {
          writefln("\t%s", str);
+      }
+
+      if (log.length > 0) {
+         writeln();
       }
    }
 
