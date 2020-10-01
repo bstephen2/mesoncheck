@@ -105,7 +105,7 @@ uint check_problem(uint id) {
 
    foreach (Row row; range) {
       //$mess = sprintf 'PID %d (EID %d) not in table Problem!', $pid, $eid;
-      string mess = "PID " ~ to!string(row[0]) ~ " (" ~ to!string(
+      string mess = "PID " ~ to!string(row[0]) ~ " (EID " ~ to!string(
             row[1]) ~ ") not in table Problem!";
       log ~= mess;
       rc++;
@@ -120,8 +120,7 @@ uint check_problem(uint id) {
    range = conn.query(sql_6);
 
    foreach (Row row; range) {
-      //$mess = sprintf 'PID %d version EID %d not in table Versions!', $pid, $eid;
-      string mess = "PID " ~ to!string(row[0]) ~ " version " ~ to!string(
+      string mess = "PID " ~ to!string(row[0]) ~ " version EID " ~ to!string(
             row[1]) ~ " not in table Versions!";
       log ~= mess;
       rc++;
@@ -136,7 +135,7 @@ uint check_problem(uint id) {
    range = conn.query(sql_7);
 
    foreach (Row row; range) {
-      string mess = "PID " ~ to!string(row[0]) ~ " after " ~ to!string(
+      string mess = "PID " ~ to!string(row[0]) ~ " after EID " ~ to!string(
             row[1]) ~ " not in table Afters!";
       log ~= mess;
       rc++;

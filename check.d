@@ -63,17 +63,17 @@ uint check_database() {
    func_array ~= &check_composer;
    func_array ~= &check_problem;
    func_array ~= &check_problem_composer;
-   func_array ~= &check_problem_source;
    func_array ~= &check_source;
+   func_array ~= &check_problem_source;
    func_array ~= &check_versions;
-   func_array ~= &check_afters;
-   func_array ~= &check_magranges;
-   func_array ~= &check_todoquote;
-   func_array ~= &check_nots;
    func_array ~= &check_cants;
+   func_array ~= &check_afters;
    func_array ~= &check_cabs;
+   func_array ~= &check_magranges;
    func_array ~= &check_sants;
+   func_array ~= &check_todoquote;
    func_array ~= &check_sabs;
+   func_array ~= &check_nots;
    func_array ~= &check_vnots;
 
    foreach (uint i, func; parallel(func_array)) {
