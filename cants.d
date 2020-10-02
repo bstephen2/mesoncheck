@@ -3,14 +3,17 @@ module cants;
 import std.array : array;
 import std.variant;
 import std.conv;
+import std.string;
 import mysql;
 
 import constant;
 import check;
+import cant_rec;
 
 uint check_cants(uint id) {
    uint rc;
    string[] log;
+   cant_rec[] cantrecs;
    Connection conn;
    ResultRange range;
    ulong c_done;
@@ -243,9 +246,27 @@ uint check_cants(uint id) {
 	 +			as (cabid + pid) in table Cabs with year order correct.
 	 +/
 
+   range = conn.query(sql_9);
+
+   foreach (Row row; range) {
+      int pid = row[0].get!(int);
+      int caid = row[1].get!(int);
+      string years = to!string(row[2]);
+
+      cantrecs ~= new cant_rec(pid, caid, years);
+   }
+
+   range.close();
+
+   foreach (cant_rec cr; cantrecs) {
+      string nsql = format(sql_9a, cr.caid, cr.pid);
+      log ~= nsql;
+      rc++;
+      //range = conn.query(nsql);
+      //range.close();
+   }
+
    /+
-    $sth = $dbh->prepare($ccan_check_9);
-    $sth->execute();
 
     while ( $r_row = $sth->fetchrow_arrayref ) {
         $pid      = $r_row->[0];
@@ -278,7 +299,6 @@ uint check_cants(uint id) {
            $count++;
         }
 
-        $sath->finish();
     }
 
    	+/
