@@ -1,6 +1,6 @@
 module cants;
 
-import std.array : array;
+import std.array;
 import std.variant;
 import std.conv;
 import std.string;
@@ -8,12 +8,10 @@ import mysql;
 
 import constant;
 import check;
-import cant_rec;
 
 uint check_cants(uint id) {
    uint rc;
    string[] log;
-   cant_rec[] cantrecs;
    Connection conn;
    ResultRange range;
    ulong c_done;
@@ -63,10 +61,14 @@ uint check_cants(uint id) {
       				~ "WHERE tempe.pid IS NULL "
       				~ "ORDER BY cants.caid";
       
-   string sql_9 = "SELECT pid, caid, years FROM cants";
+   string sql_9 	= "SELECT cants.pid, cants.caid FROM cants LEFT JOIN cabs "
+   					~ "ON (cants.pid = cabs.cabid) AND (cants.caid = cabs.pid) "
+  						~ "WHERE cabs.pid IS NULL "
+   					~ "ORDER BY cants.pid";
    
-   string sql_9a =	"SELECT years FROM cabs "
-   						~ "WHERE (pid = %d) AND (cabid = %d)";
+   string sql_9a	=	"SELECT cants.pid, cants.caid, cants.years, cabs.years FROM cants, cabs "
+   					~	"WHERE (cants.pid = cabs.cabid) AND (cants.caid = cabs.pid) "
+   					~	"ORDER BY cants.pid";
    
    string sql_10 =	"SELECT count(*) AS rep, pid, caid FROM cants "
       					~ "GROUP BY pid, caid "
@@ -243,65 +245,52 @@ uint check_cants(uint id) {
    range.close();
 
    /+	(9)	Check that every (pid + caid) in table Cants is reciprocated
-	 +			as (cabid + pid) in table Cabs with year order correct.
+	 +			as (cabid + pid) in table Cabs.
 	 +/
 
    range = conn.query(sql_9);
 
    foreach (Row row; range) {
-      int pid = row[0].get!(int);
-      int caid = row[1].get!(int);
-      string years = to!string(row[2]);
-
-      cantrecs ~= new cant_rec(pid, caid, years);
+      // dfmt off
+      string mess = "PID, CAID ("
+      				~ to!string(row[0])
+      				~ ", "
+      				~ to!string(row[1])
+      				~ ") not reciprocated in table Cabs!";
+      // dfmt on
+      log ~= mess;
+      rc++;
    }
 
    range.close();
 
-   foreach (cant_rec cr; cantrecs) {
-      string nsql = format(sql_9a, cr.caid, cr.pid);
-      log ~= nsql;
-      rc++;
-      //range = conn.query(nsql);
-      //range.close();
+   /+	(9a)	For Cants records that are reciprocated in Cabs, check that
+	 +			the years make sense.
+	 +/
+
+   range = conn.query(sql_9a);
+
+   foreach (Row row; range) {
+      string cants_year = to!string(row[2]);
+      string cabs_year = to!string(row[3]);
+
+      if ((cmp(cants_year, "0000") == 0) & (cmp(cabs_year, "0000") == 0)) {
+         if (cmp(cabs_year, cants_year) < 0) {
+
+            // dfmt off
+      		string mess = "PID, CAID ("
+      						~ to!string(row[0])	
+      						~	", "
+      						~	to!string(row[1])
+      						~	") years wrong way round in reciprocated record in table Cabs!";
+      		// dfmt on
+            log ~= mess;
+            rc++;
+         }
+      }
    }
 
-   /+
-
-    while ( $r_row = $sth->fetchrow_arrayref ) {
-        $pid      = $r_row->[0];
-        $caid     = $r_row->[1];
-        $years    = $r_row->[2];
-        $temp_sql = sprintf $ccan_check_9a, $caid, $pid;
-        $sath     = $dbh->prepare($temp_sql);
-        $sath->execute();
-        if ( $r_arow = $sath->fetchrow_arrayref ) {
-            $oyears = $r_arow->[0];
-            if ( ( $years ne '0000' ) && ( $oyears ne '0000' ) ) {
-                if ( $years lt $oyears ) {
-
-                    $mess = sprintf
-'PID, CAID (%d, %d) years wrong way round in reciprocated record in table Cabs!',
-                      $pid, $caid;
-                    $ar = [ $rid, 2, $mess ];
-                    $message_queue->enqueue($ar);
-                    $count++;
-                }
-            }
-        }
-        else {
-            $mess =
-              sprintf 'PID, CAID (%d, %d) not reciprocated in table Cabs!',
-              $pid, $caid;
-            $ar = [ $rid, 2, $mess ];
-            $message_queue->enqueue($ar);
-
-           $count++;
-        }
-
-    }
-
-   	+/
+   range.close();
 
    /+	(10)	Check for duplicates.
 	 +/
