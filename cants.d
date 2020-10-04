@@ -35,6 +35,10 @@ uint check_cants(uint id) {
       				~ "WHERE (a.pid = b.pid) AND (a.caid = b.aid) "
       				~ "ORDER BY a.pid, a.caid";
       
+   string sql_3a	= "SELECT a.pid, a.caid FROM cants AS a, vnots AS b "
+      				~ "WHERE (a.pid = b.pid) AND (a.caid = b.aid) "
+      				~ "ORDER BY a.pid, a.caid";
+      
    string sql_4 = "SELECT a.pid, a.caid FROM cants AS a, cabs AS b "
       				~ "WHERE (a.pid = b.pid) AND (a.caid = b.cabid) "
       				~ "ORDER BY a.pid, a.caid";
@@ -70,9 +74,6 @@ uint check_cants(uint id) {
    					~	"WHERE (cants.pid = cabs.cabid) AND (cants.caid = cabs.pid) "
    					~	"ORDER BY cants.pid";
    
-   string sql_10 =	"SELECT count(*) AS rep, pid, caid FROM cants "
-      					~ "GROUP BY pid, caid "
-      					~ "HAVING rep > 1";
 	// dfmt on
 
    auto connectionStr = "host=localhost;port=3306;user=bstephen;pwd=rice37;db=meson";
@@ -139,6 +140,26 @@ uint check_cants(uint id) {
       					~ ", "
       					~ to!string(row[1])
       					~ ") also in table Nots!";
+      // dfmt on
+      log ~= mess;
+      rc++;
+   }
+
+   range.close();
+
+   /+	(3a)	Check that every (pid + caid) in table Cants is not in table
+	 +			Vnots.
+	 +/
+
+   range = conn.query(sql_3a);
+
+   foreach (Row row; range) {
+      // dfmt off
+      string mess = "PID, CAID ("
+      					~ to!string(row[0])
+      					~ ", "
+      					~ to!string(row[1])
+      					~ ") also in table Vnots!";
       // dfmt on
       log ~= mess;
       rc++;
@@ -274,8 +295,8 @@ uint check_cants(uint id) {
       string cants_year = to!string(row[2]);
       string cabs_year = to!string(row[3]);
 
-      if ((cmp(cants_year, "0000") == 0) & (cmp(cabs_year, "0000") == 0)) {
-         if (cmp(cabs_year, cants_year) < 0) {
+      if ((cmp(cants_year, "0000") != 0) && (cmp(cabs_year, "0000") != 0)) {
+         if (cmp(cabs_year, cants_year) > 0) {
 
             // dfmt off
       		string mess = "PID, CAID ("
@@ -288,25 +309,6 @@ uint check_cants(uint id) {
             rc++;
          }
       }
-   }
-
-   range.close();
-
-   /+	(10)	Check for duplicates.
-	 +/
-
-   range = conn.query(sql_10);
-
-   foreach (Row row; range) {
-      // dfmt off
-      string mess = "PID CAID ("
-      					~ to!string(row[1])
-      					~ ", "
-      					~ to!string(row[2])
-      					~ ") is duplicated!";
-      // dfmt on
-      log ~= mess;
-      rc++;
    }
 
    range.close();
