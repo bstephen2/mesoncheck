@@ -5,7 +5,6 @@ import std.conv;
 import std.variant;
 import mysql;
 
-import constant;
 import check;
 
 uint check_afters(uint id) {

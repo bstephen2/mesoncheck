@@ -6,7 +6,6 @@ import std.variant;
 import std.conv;
 import mysql;
 
-import constant;
 import check;
 
 uint check_sants(uint id) {
@@ -51,18 +50,18 @@ uint check_sants(uint id) {
       				~ "WHERE (a.pid = b.pid) AND (a.said = b.cabid) "
       				~ "ORDER BY a.pid, a.said";
       
-   string sql_7 = "CREATE TEMPORARY TABLE tempe SELECT pid FROM problemsource "
+   string sql_7 = "CREATE TEMPORARY TABLE santtemp SELECT pid FROM problemsource "
    					~ "WHERE sid = 5454 "
    					~ "ORDER BY pid";
    
-   string sql_7a	=	"SELECT sants.pid FROM sants LEFT JOIN tempe "
-      				~ "ON sants.pid = tempe.pid "
-      				~ "WHERE tempe.pid IS NULL "
+   string sql_7a	=	"SELECT sants.pid FROM sants LEFT JOIN santtemp "
+      				~ "ON sants.pid = santtemp.pid "
+      				~ "WHERE santtemp.pid IS NULL "
       				~ "ORDER BY sants.pid";
       
-   string sql_8 	= "SELECT sants.said FROM sants LEFT JOIN tempe "
-      				~ "ON sants.said = tempe.pid "
-      				~ "WHERE tempe.pid IS NULL "
+   string sql_8 	= "SELECT sants.said FROM sants LEFT JOIN santtemp "
+      				~ "ON sants.said = santtemp.pid "
+      				~ "WHERE santtemp.pid IS NULL "
       				~ "ORDER BY sants.said";
       
    string sql_9 	= "SELECT sants.pid, sants.said FROM sants LEFT JOIN sabs "
@@ -78,7 +77,7 @@ uint check_sants(uint id) {
 
    auto connectionStr = "host=localhost;port=3306;user=bstephen;pwd=rice37;db=meson";
    conn = new Connection(connectionStr);
-   
+
    /+	(1)	Check that every pid in table Sants is in table Problem.
 	 +/
 
@@ -233,22 +232,24 @@ uint check_sants(uint id) {
 
    c_done = conn.exec(sql_7);
 
-   range = conn.query(sql_7a);
+   version (NOTDELL) {
+      range = conn.query(sql_7a);
 
-   foreach (Row row; range) {
-      // dfmt off
-      string mess = "PID "
+      foreach (Row row; range) {
+         // dfmt off
+      	string mess = "PID "
       					~ to!string(row[0])
-      					~ " needs a SNAP!";
-      // dfmt on
-      log ~= mess;
-      rc++;
+      					~ " needs a NEAR SNAP!";
+      	// dfmt on
+         log ~= mess;
+         rc++;
+      }
+
+      range.close();
    }
 
-   range.close();
-
    /+	(8)	Check that every said in table Sants in in table ProblemSource
-	 +			as a snap;
+	 +			as a near snap;
 	 +/
 
    range = conn.query(sql_8);
@@ -257,7 +258,7 @@ uint check_sants(uint id) {
       // dfmt off
       string mess = "SAID "
       					~ to!string(row[0])
-      					~ " needs a SNAP!";
+      					~ " needs a NEAR SNAP!";
       // dfmt on
       log ~= mess;
       rc++;

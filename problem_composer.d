@@ -5,7 +5,6 @@ import std.variant;
 import std.conv;
 import mysql;
 
-import constant;
 import check;
 
 uint check_problem_composer(uint id) {

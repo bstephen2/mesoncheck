@@ -6,7 +6,6 @@ import std.conv;
 import std.string;
 import mysql;
 
-import constant;
 import check;
 
 uint check_cants(uint id) {
