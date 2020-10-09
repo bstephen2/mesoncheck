@@ -3,6 +3,7 @@ module sabs;
 import std.array : array;
 import std.variant;
 import std.conv;
+import std.string;
 import mysql;
 
 import check;
@@ -15,312 +16,312 @@ uint check_sabs(uint id) {
 
    auto connectionStr = "host=localhost;port=3306;user=bstephen;pwd=rice37;db=meson";
    conn = new Connection(connectionStr);
+   ulong c_done;
+
+   // dfmt off
+
+    string sql_1	=	"SELECT sabs.pid FROM sabs LEFT JOIN problem "
+      				~	"ON sabs.pid = problem.pid "
+      				~	"WHERE problem.pid IS NULL "
+      				~	"ORDER BY sabs.pid";
+      				
+    string sql_2	=	"SELECT sabs.sabid FROM sabs LEFT JOIN problem "
+      				~	"ON sabs.sabid = problem.pid "
+      				~	"WHERE problem.pid IS NULL "
+      				~	"ORDER BY sabs.sabid";
+      				
+    string sql_2a	=	"SELECT a.pid, a.sabid, a.years FROM sabs AS a, problem AS b "
+      				~	"WHERE (a.sabid = b.pid) AND (a.years != b.years)"
+      				~	"ORDER BY a.pid, a.sabid";
+      
+    string sql_3	=	"SELECT a.pid, a.sabid FROM sabs AS a, sants AS b "
+      				~	"WHERE (a.pid = b.pid) AND (a.sabid = b.said) "
+      				~	"ORDER BY a.pid, a.sabid";
+      
+    string sql_4	=	"SELECT a.pid, a.sabid FROM sabs AS a, nots AS b "
+      				~	"WHERE (a.pid = b.pid) AND (a.sabid = b.aid) "
+      				~	"ORDER BY a.pid, a.sabid";
+      
+    string sql_4a	=	"SELECT a.pid, a.sabid FROM sabs AS a, vnots AS b "
+      				~	"WHERE (a.pid = b.pid) AND (a.sabid = b.aid) "
+      				~	"ORDER BY a.pid, a.sabid";
+      
+    string sql_5	=	"SELECT a.pid, a.sabid FROM sabs AS a, cants AS b "
+      				~	"WHERE (a.pid = b.pid) AND (a.sabid = b.caid) "
+      				~	"ORDER BY a.pid, a.sabid";
+      
+    string sql_6	=	"SELECT a.pid, a.sabid FROM sabs AS a, cabs AS b "
+      				~	"WHERE (a.pid = b.pid) AND (a.sabid = b.cabid) "
+      				~	"ORDER BY a.pid, a.sabid";
+
+    string sql_6a	=	"CREATE TEMPORARY TABLE sabtemp SELECT pid FROM problemsource "
+   					~	"WHERE sid = 5454 "
+   					~	"ORDER BY pid";
+      				
+    string sql_7	=	"SELECT sabs.pid FROM sabs LEFT JOIN sabtemp "
+      				~	"ON sabs.pid = sabtemp.pid "
+      				~	"WHERE sabtemp.pid IS NULL "
+      				~	"ORDER BY sabs.pid";
+      
+    string sql_8	=	"SELECT sabs.sabid FROM sabs LEFT JOIN sabtemp "
+      				~	"ON sabs.sabid = sabtemp.pid "
+      				~	"WHERE sabtemp.pid IS NULL "
+      				~	"ORDER BY sabs.sabid";
+      
+   string sql_9 	= "SELECT sabs.pid, sabs.sabid FROM sabs LEFT JOIN sants "
+   					~ "ON (sabs.pid = sants.said) AND (sabs.sabid = sants.pid) "
+  						~ "WHERE sants.pid IS NULL "
+   					~ "ORDER BY sabs.pid";
+   
+   string sql_9a	=	"SELECT sabs.pid, sabs.sabid, sabs.years, sants.years FROM sabs, sants "
+   					~	"WHERE (sabs.pid = sants.said) AND (sabs.sabid = sants.pid) "
+   					~	"ORDER BY sabs.pid";
+   
+      // dfmt on
+
+   /+	(1)	Check that every pid in table Sabs is in table Problem.
+	 +/
+
+   range = conn.query(sql_1);
+
+   foreach (Row row; range) {
+      //dfmt off
+      string mess	=	"PID "
+      				~	to!string(row[0])
+      				~	" not in table Problem!";
+      //dfmt on
+      log ~= mess;
+      rc++;
+   }
+
+   range.close();
+
+   /+	(2)	Check that every sabid in table Sabs is in table Problem as pid.
+	 +/
+
+   range = conn.query(sql_2);
+
+   foreach (Row row; range) {
+      // dfmt off
+      string mess	=	"SABID "
+      				~	to!string(row[0])
+      				~	" not in table Problem!";
+      // dfmt on
+      log ~= mess;
+      rc++;
+   }
+
+   range.close();
+
+   /+	(2a)	Check that every (sabid + years) in table Sabs agrees with
+	 +			(pid + years ) in table Problem.
+	 +/
+
+   range = conn.query(sql_2a);
+
+   foreach (Row row; range) {
+      // dfmt off
+      string mess	=	"PID, SABID, YEARS ( "
+      				~	to!string(row[0])
+      				~	", "
+      				~	to!string(row[1])
+      				~	", "
+      				~	to!string(row[2])
+      				~	") doesn't equal years in table Problem!";
+      // dfmt on
+      log ~= mess;
+      rc++;
+   }
+
+   range.close();
+
+   /+	(3)	Check that every (pid + sabid) in table Sabs is not in table
+	 +			Sants.
+	 +/
+
+   range = conn.query(sql_3);
+
+   foreach (Row row; range) {
+      // dfmt off
+      string mess	=	"PID, SABID ( "
+      				~	to!string(row[0])
+      				~	", "
+      				~	to!string(row[1])
+      				~	") also in table Sants!";
+      // dfmt on
+      log ~= mess;
+      rc++;
+   }
+
+   range.close();
+
+   /+	(4)	Check that every (pid + sabid) in table Sabs is not in table
+	 +			Nots.
+	 +/
+   range = conn.query(sql_4);
+
+   foreach (Row row; range) {
+      // dfmt off
+      string mess	=	"PID, SABID ( "
+      				~	to!string(row[0])
+      				~	", "
+      				~	to!string(row[1])
+      				~	") also in table Nots!";
+      // dfmt on
+      log ~= mess;
+      rc++;
+   }
+
+   range.close();
+
+   /+	(4a)	Check that every (pid + sabid) in table Sabs is not in table
+	 +			Vnots.
+	 +/
+   range = conn.query(sql_4a);
+
+   foreach (Row row; range) {
+      // dfmt off
+      string mess	=	"PID, SABID ( "
+      				~	to!string(row[0])
+      				~	", "
+      				~	to!string(row[1])
+      				~	") also in table Vnots!";
+      // dfmt on
+      log ~= mess;
+      rc++;
+   }
+
+   range.close();
+
+   /+	(5)	Check that every (pid + sabid) in table Sabs is not in table
+	 +			Cants.
+	 +/
+   range = conn.query(sql_5);
+
+   foreach (Row row; range) {
+      // dfmt off
+      string mess	=	"PID, SABID ( "
+      				~	to!string(row[0])
+      				~	", " ~ to!string(row[1])
+      				~	") also in table Cants!";
+      // dfmt on
+      log ~= mess;
+      rc++;
+   }
+
+   range.close();
+
+   /+	(6)	Check that every (pid + sabid) in table Sabs is not in table
+	 +			Cabs.
+	 +/
+
+   range = conn.query(sql_6);
+
+   foreach (Row row; range) {
+      // dfmt off
+      string mess	=	"PID, SABID ( "
+      				~	to!string(row[0])
+      				~	", "
+      				~	to!string(row[1])
+      				~	") also in table Cabs!";
+      // dfmt on
+      log ~= mess;
+      rc++;
+   }
+
+   range.close();
+
+   /+	(7)	Check that every pid in table Sabs is in table ProblemSource
+	 +			as a near snap;
+	 +/
+
+   c_done = conn.exec(sql_6a);
+
+   version (NOTDELL) {
+      range = conn.query(sql_7);
+
+      foreach (Row row; range) {
+         // dfmt off
+      	string mess	=	"PID "
+      					~	to!string(row[0])
+      					~	" needs a NEAR SNAP!";
+      	// dfmt on
+         log ~= mess;
+         rc++;
+      }
+
+      range.close();
+   }
+
+   /+	(8)	Chcck that every sabid in table Sabs is in table ProblemSource
+	 +			as a near snap;
+	 +/
+
+   range = conn.query(sql_8);
+
+   foreach (Row row; range) {
+      // dfmt off
+      string mess	=	"SABID "
+      				~	to!string(row[0])
+      				~	" needs a NEAR SNAP!";
+      // dfmt on
+      log ~= mess;
+      rc++;
+   }
+
+   range.close();
+
+   /+	(9)	Check that every (pid + sabid) in table Sabs is reciprocated
+	 +			as (said + pid) in table Sants.
+	 +/
+
+   range = conn.query(sql_9);
+
+   foreach (Row row; range) {
+      // dfmt off
+      string mess = "PID, SABID ("
+      				~ to!string(row[0])
+      				~ ", "
+      				~ to!string(row[1])
+      				~ ") not reciprocated in table Sants!";
+      // dfmt on
+      log ~= mess;
+      rc++;
+   }
+
+   range.close();
+
+   /+	(9a)	For Sabs records that are reciprocated in Sants, check that
+	 +			the years make sense.
+	 +/
+
+   range = conn.query(sql_9a);
+
+   foreach (Row row; range) {
+      string sabs_year = to!string(row[2]);
+      string sants_year = to!string(row[3]);
+
+      if ((cmp(sants_year, "0000") != 0) && (cmp(sabs_year, "0000") != 0)) {
+         if (cmp(sabs_year, sants_year) > 0) {
+
+            // dfmt off
+      		string mess = "PID, SABID ("
+      						~ to!string(row[0])	
+      						~	", "
+      						~	to!string(row[1])
+      						~	") years wrong way round in reciprocated record in table Sants!";
+      		// dfmt on
+            log ~= mess;
+            rc++;
+         }
+      }
+   }
+
+   range.close();
+
    conn.close();
 
    display_status(id, log, "check_sabs");
 
    return rc;
 }
-/+
-sub check_sabs {
-    my ( $dbh, $rid, $tid ) = @_;
-    my $count = 0;
-    my $sth;
-    my $r_row;
-    my $sabid;
-    my $pid;
-    my $years;
-    my $ar;
-    my $mess;
-    my $csab_check_1 =
-        'SELECT sabs.pid FROM sabs LEFT JOIN problem '
-      . 'ON sabs.pid = problem.pid '
-      . 'WHERE problem.pid IS NULL '
-      . 'ORDER BY sabs.pid';
-    my $csab_check_2 =
-        'SELECT sabs.sabid FROM sabs LEFT JOIN problem '
-      . 'ON sabs.sabid = problem.pid '
-      . 'WHERE problem.pid IS NULL '
-      . 'ORDER BY sabs.sabid';
-    my $csab_check_2a =
-        'SELECT a.pid, a.Sabid, a.years FROM sabs AS a, problem AS b '
-      . 'WHERE (a.sabid = b.pid) AND (a.years != b.years)'
-      . 'ORDER BY a.pid, a.sabid';
-    my $csab_check_3 =
-        'SELECT a.pid, a.sabid FROM sabs AS a, cants AS b '
-      . 'WHERE (a.pid = b.pid) AND (a.sabid = b.caid) '
-      . 'ORDER BY a.pid, a.sabid';
-    my $csab_check_4 =
-        'SELECT a.pid, a.sabid FROM sabs AS a, cabs AS b '
-      . 'WHERE (a.pid = b.pid) AND (a.sabid = b.cabid) '
-      . 'ORDER BY a.pid, a.sabid';
-    my $csab_check_5 =
-        'SELECT a.pid, a.sabid FROM sabs AS a, sants AS b '
-      . 'WHERE (a.pid = b.pid) AND (a.sabid = b.said) '
-      . 'ORDER BY a.pid, a.sabid';
-    my $csab_check_6 =
-        'SELECT a.pid, a.sabid FROM sabs AS a, nots AS b '
-      . 'WHERE (a.pid = b.pid) AND (a.sabid = b.aid) '
-      . 'ORDER BY a.pid, a.sabid';
-    my $csab_check_7 =
-        'SELECT sabs.pid FROM sabs LEFT JOIN tempf '
-      . 'ON sabs.pid = tempf.pid '
-      . 'WHERE tempf.pid IS NULL '
-      . 'ORDER BY sabs.pid';
-    my $csab_check_8 =
-        'SELECT sabs.sabid FROM sabs LEFT JOIN tempf '
-      . 'ON sabs.sabid = tempf.pid '
-      . 'WHERE tempf.pid IS NULL '
-      . 'ORDER BY sabs.sabid';
-    my $csab_check_9 = 'SELECT pid, sabid, years FROM sabs';
-    my $csab_check_9a =
-      'SELECT years FROM sants ' . 'WHERE (pid = %d) AND (said = %d)';
-    my $csab_check_10 =
-        'SELECT count(*) AS rep, pid, sabid FROM sabs '
-      . 'GROUP BY pid, sabid '
-      . 'HAVING rep > 1';
-    my $temp_sql;
-    my $sath;
-    my $r_arow;
-    my $oyears;
-
-    $ar = [ $rid, 1, 'Checking table Sabs ...', $tid ];
-    $message_queue->enqueue($ar);
-
-    #print("\tChecking table Sabs ...\n");
-
-    #	(1)	Check that every pid in table Sabs is in table Problem.
-
-    $sth = $dbh->prepare($csab_check_1);
-    $sth->execute();
-
-    while ( $r_row = $sth->fetchrow_arrayref ) {
-        $pid  = $r_row->[0];
-        $mess = sprintf 'PID %d not in table Problem!', $pid;
-        $ar   = [ $rid, 2, $mess ];
-        $message_queue->enqueue($ar);
-
-        #print("\t\tPID $pid not in table Problem!\n");
-        $count++;
-    }
-
-    $sth->finish();
-
-    #	(2)	Check that every aid in table Sabs is in table Problem as pid.
-
-    $sth = $dbh->prepare($csab_check_2);
-    $sth->execute();
-
-    while ( $r_row = $sth->fetchrow_arrayref ) {
-        $sabid = $r_row->[0];
-        $mess  = sprintf 'SABID %d not in table Problem!', $sabid;
-        $ar    = [ $rid, 2, $mess ];
-        $message_queue->enqueue($ar);
-
-        #print("\t\tSABID $sabid not in table Problem!\n");
-        $count++;
-    }
-
-    $sth->finish();
-
-    #	(2a)	Check that every (sabid + years) in table Sabs agrees with
-    #			(pid + years ) in table Problem.
-
-    $sth = $dbh->prepare($csab_check_2a);
-    $sth->execute();
-
-    while ( $r_row = $sth->fetchrow_arrayref ) {
-        $pid   = $r_row->[0];
-        $sabid = $r_row->[1];
-        $years = $r_row->[2];
-        $mess  = sprintf
-'PID, SABID, YEARS (%d, %d, %s) doesn\'t equal years in table Problem!',
-          $pid, $sabid, $years;
-        $ar = [ $rid, 2, $mess ];
-        $message_queue->enqueue($ar);
-
-#print("\t\tPID, SABID, YEARS ($pid, $sabid, $years) doesn't equal years in table Problem!\n");
-        $count++;
-    }
-
-    #	(3)	Check that every (pid + sabid) in table Sabs is not in table Cants.
-
-    $sth = $dbh->prepare($csab_check_3);
-    $sth->execute();
-
-    while ( $r_row = $sth->fetchrow_arrayref ) {
-        $pid   = $r_row->[0];
-        $sabid = $r_row->[1];
-        $mess  = sprintf 'PID, SABID (%d, %d) also in table Cants!', $pid,
-          $sabid;
-        $ar = [ $rid, 2, $mess ];
-        $message_queue->enqueue($ar);
-
-        #print("\t\tPID, SABID ($pid, $sabid) also in table Cants!\n");
-        $count++;
-    }
-
-    $sth->finish();
-
-    #	(4)	Check that every (pid + sabid) in table Sabs is not in table
-    #			Cabs.
-
-    $sth = $dbh->prepare($csab_check_4);
-    $sth->execute();
-
-    while ( $r_row = $sth->fetchrow_arrayref ) {
-        $pid   = $r_row->[0];
-        $sabid = $r_row->[1];
-        $mess = sprintf 'PID, SABID (%d, %d) also in table Cabs!', $pid, $sabid;
-        $ar = [ $rid, 2, $mess ];
-        $message_queue->enqueue($ar);
-
-        #print("\t\tPID, SABID ($pid, $sabid) also in table Cabs!\n");
-        $count++;
-    }
-
-    $sth->finish();
-
-    #	(5)	Check that every (pid + sabid) in table Sabs is not in table
-    #			Sants.
-
-    $sth = $dbh->prepare($csab_check_5);
-    $sth->execute();
-
-    while ( $r_row = $sth->fetchrow_arrayref ) {
-        $pid   = $r_row->[0];
-        $sabid = $r_row->[1];
-        $mess  = sprintf 'PID, SABID (%d, %d) also in table Sants!', $pid,
-          $sabid;
-        $ar = [ $rid, 2, $mess ];
-        $message_queue->enqueue($ar);
-
-        #print("\t\tPID, SABID ($pid, $sabid) also in table Sants!\n");
-        $count++;
-    }
-
-    $sth->finish();
-
-    #	(6)	Check that every (pid + sabid) in table Sabs is not in table
-    #			Nots.
-
-    $sth = $dbh->prepare($csab_check_6);
-    $sth->execute();
-
-    while ( $r_row = $sth->fetchrow_arrayref ) {
-        $pid   = $r_row->[0];
-        $sabid = $r_row->[1];
-        $mess = sprintf 'PID, SABID (%d, %d) also in table Nots!', $pid, $sabid;
-        $ar = [ $rid, 2, $mess ];
-        $message_queue->enqueue($ar);
-
-        #print("\t\tPID, SABID ($pid, $sabid) also in table Nots!\n");
-        $count++;
-    }
-
-    $sth->finish();
-
-    #	(7)	Check that every pid in table Sabs is in table ProblemSource
-    #			as a near snap;
-
-    $sth = $dbh->prepare($csab_check_7);
-    $sth->execute();
-
-    while ( $r_row = $sth->fetchrow_arrayref ) {
-        $pid  = $r_row->[0];
-        $mess = sprintf 'PID %d needs a NEAR SNAP!', $pid;
-        $ar   = [ $rid, 2, $mess ];
-        $message_queue->enqueue($ar);
-
-        #print("\t\tPID $pid needs a NEAR SNAP!\n");
-        $count++;
-    }
-
-    $sth->finish();
-
-    #	(8)	Check that every sabid in table Sabs in in table ProblemSource
-    #			as a near snap;
-
-    $sth = $dbh->prepare($csab_check_8);
-    $sth->execute();
-
-    while ( $r_row = $sth->fetchrow_arrayref ) {
-        $sabid = $r_row->[0];
-        $mess  = sprintf 'SABID %d needs a NEAR SNAP!', $sabid;
-        $ar    = [ $rid, 2, $mess ];
-        $message_queue->enqueue($ar);
-
-        #print("\t\tSABID $sabid needs a NEAR SNAP!\n");
-        $count++;
-    }
-
-    $sth->finish();
-
-    #	(9)	Check that every (pid + sabid) in table Sabs is reciprocated
-    #			as (said + pid) in table Sants with year order correct.
-
-    $sth = $dbh->prepare($csab_check_9);
-    $sth->execute();
-
-    while ( $r_row = $sth->fetchrow_arrayref ) {
-        $pid      = $r_row->[0];
-        $sabid    = $r_row->[1];
-        $years    = $r_row->[2];
-        $temp_sql = sprintf $csab_check_9a, $sabid, $pid;
-        $sath     = $dbh->prepare($temp_sql);
-        $sath->execute();
-        if ( $r_arow = $sath->fetchrow_arrayref ) {
-            $oyears = $r_arow->[0];
-            if ( ( $years ne '0000' ) && ( $oyears ne '0000' ) ) {
-                if ( $years gt $oyears ) {
-                    $mess = sprintf
-'PID, SABID (%d, %d) years wrong way round in reciprocated record in table Sants!',
-                      $pid, $sabid;
-                    $ar = [ $rid, 2, $mess ];
-                    $message_queue->enqueue($ar);
-
-#print("\t\tPID, SABID ($pid, $sabid) years wrong way round in reciprocated record in table Sants!\n");
-                    $count++;
-                }
-            }
-        }
-        else {
-            $mess =
-              sprintf 'PID, SABID (%d, %d) not reciprocated in table Sants!',
-              $pid, $sabid;
-            $ar = [ $rid, 2, $mess ];
-            $message_queue->enqueue($ar);
-
-     #print("\t\tPID, SABID ($pid, $sabid) not reciprocated in table Sants!\n");
-            $count++;
-        }
-
-        $sath->finish();
-    }
-
-    $sth->finish();
-
-    #	(10) Check for duplicates.
-
-    $sth = $dbh->prepare($csab_check_10);
-    $sth->execute();
-
-    while ( $r_row = $sth->fetchrow_arrayref ) {
-        $pid   = $r_row->[1];
-        $sabid = $r_row->[2];
-        $mess  = sprintf 'PID, SABID (%d, %d) duplicated!', $pid, $sabid;
-        $ar    = [ $rid, 2, $mess ];
-        $message_queue->enqueue($ar);
-
-        #print("\t\tPID, SABID ($pid, $sabid) duplicated!\n");
-        $count++;
-    }
-
-    $sth->finish();
-
-    $ar = [ $rid, 0 ];
-    $message_queue->enqueue($ar);
-
-    return $count;
-}
-+/

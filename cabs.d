@@ -74,7 +74,6 @@ uint check_cabs(uint id) {
    					~	"WHERE (cabs.pid = cants.caid) AND (cabs.cabid = cants.pid) "
    					~	"ORDER BY cabs.pid";
    
-
       // dfmt on
    auto connectionStr = "host=localhost;port=3306;user=bstephen;pwd=rice37;db=meson";
    conn = new Connection(connectionStr);
