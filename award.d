@@ -12,9 +12,12 @@ uint check_award(uint id) {
    string[] log;
    Connection conn;
    ResultRange range;
-   string sql_1 = "SELECT award.aid, award.name FROM award LEFT JOIN problem "
-      ~ "ON award.aid = problem.aid "
-      ~ "WHERE problem.aid IS NULL " ~ "ORDER BY award.aid";
+   // dfmt off
+   string sql_1	=	"SELECT award.aid, award.name FROM award LEFT JOIN problem "
+      				~	"ON award.aid = problem.aid "
+      				~	"WHERE problem.aid IS NULL "
+      				~	"ORDER BY award.aid";
+   // dfmt on
 
    auto connectionStr = "host=localhost;port=3306;user=bstephen;pwd=rice37;db=meson";
    conn = new Connection(connectionStr);
@@ -26,7 +29,13 @@ uint check_award(uint id) {
    range = conn.query(sql_1);
 
    foreach (Row row; range) {
-      string mess = "AID " ~ to!string(row[0]) ~ "(" ~ to!string(row[1]) ~ ") not in table Problem!";
+   	// dfmt off
+      string mess	=	"AID "
+      				~	to!string(row[0])
+      				~	"("
+      				~	to!string(row[1])
+      				~	") not in table Problem!";
+      // dfmt on
       log ~= mess;
       rc++;
    }

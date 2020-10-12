@@ -21,12 +21,21 @@ uint check_abstracted(uint id) {
 	 +			in table Source.
 	 +/
 
-   string sql_1 = "SELECT abstracted.sid FROM abstracted LEFT JOIN source ON abstracted.sid = source.sid WHERE source.sid IS NULL ORDER BY abstracted.sid";
+   // dfmt off
+   string sql_1	=	"SELECT abstracted.sid FROM abstracted LEFT JOIN source "
+   					~	"ON abstracted.sid = source.sid "
+   					~	"WHERE source.sid IS NULL "
+   					~	"ORDER BY abstracted.sid";
+   //dfmt on
 
    range = conn.query(sql_1);
 
    foreach (Row row; range) {
-      string mess = "SID " ~ to!string(row[0]) ~ " not in table Source!";
+      // dfmt off
+      string mess	=	"SID "
+      				~	to!string(row[0])
+      				~	" not in table Source!";
+      // dfmt on
       log ~= mess;
       rc++;
    }

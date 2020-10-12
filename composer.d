@@ -16,7 +16,12 @@ uint check_composer(uint id) {
    auto connectionStr = "host=localhost;port=3306;user=bstephen;pwd=rice37;db=meson";
    conn = new Connection(connectionStr);
 
-   string sql_1 = "SELECT composer.cid, composer.name FROM composer LEFT JOIN problemcomposer " ~ "ON composer.cid = problemcomposer.cid " ~ "WHERE problemcomposer.cid IS NULL " ~ "ORDER BY composer.cid";
+   // dfmt off 
+   string sql_1	=	"SELECT composer.cid, composer.name FROM composer LEFT JOIN problemcomposer "
+   					~	"ON composer.cid = problemcomposer.cid "
+   					~	"WHERE problemcomposer.cid IS NULL "
+   					~	"ORDER BY composer.cid";
+   // dfmt on
 
    /+	(1)	Check that the CID of every record in table Composer is in table
 	 +			ProblemComposer.
@@ -25,8 +30,13 @@ uint check_composer(uint id) {
    range = conn.query(sql_1);
 
    foreach (Row row; range) {
-      string mess = "CID " ~ to!string(row[0]) ~ "(" ~ to!string(
-            row[1]) ~ ") not in table ProblemComposer!";
+   	// dfmt off
+      string mess	=	"CID "
+      				~	to!string(row[0])
+      				~	"("
+      				~	to!string(row[1])
+      				~	") not in table ProblemComposer!";
+      // dfmt on
       log ~= mess;
       rc++;
    }

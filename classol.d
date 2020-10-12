@@ -12,9 +12,12 @@ uint check_classol(uint id) {
    string[] log;
    Connection conn;
    ResultRange range;
-   string sql_1 = "SELECT classol.pid FROM classol LEFT JOIN problem "
-      ~ "ON classol.pid = problem.pid "
-      ~ "WHERE problem.pid IS NULL " ~ "ORDER BY classol.pid";
+   // dfmt off
+   string sql_1	=	"SELECT classol.pid FROM classol LEFT JOIN problem "
+      				~	"ON classol.pid = problem.pid "
+      				~	"WHERE problem.pid IS NULL "
+      				~	"ORDER BY classol.pid";
+   // dfmt on
 
    auto connectionStr = "host=localhost;port=3306;user=bstephen;pwd=rice37;db=meson";
    conn = new Connection(connectionStr);
@@ -26,7 +29,11 @@ uint check_classol(uint id) {
    range = conn.query(sql_1);
 
    foreach (Row row; range) {
-      string mess = "PID " ~ to!string(row[0]) ~ " not in table Problem!";
+   	// dfmt off
+      string mess	=	"PID "
+      				~	to!string(row[0])
+      				~	" not in table Problem!";
+      // dfmt on
       log ~= mess;
       rc++;
    }

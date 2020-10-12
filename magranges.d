@@ -12,7 +12,12 @@ uint check_magranges(uint id) {
    string[] log;
    Connection conn;
    ResultRange range;
-   string sql_1 = "SELECT jos_meson_magranges.mid FROM jos_meson_magranges LEFT JOIN source " ~ "ON jos_meson_magranges.mid = source.sid " ~ "WHERE source.sid IS NULL " ~ "ORDER BY jos_meson_magranges.mid";
+   // dfmt off
+   string sql_1	=	"SELECT jos_meson_magranges.mid FROM jos_meson_magranges LEFT JOIN source "
+   					~	"ON jos_meson_magranges.mid = source.sid "
+   					~	"WHERE source.sid IS NULL "
+   					~	"ORDER BY jos_meson_magranges.mid";
+   // dfmt on
 
    auto connectionStr = "host=localhost;port=3306;user=bstephen;pwd=rice37;db=meson";
    conn = new Connection(connectionStr);
@@ -24,7 +29,11 @@ uint check_magranges(uint id) {
    range = conn.query(sql_1);
 
    foreach (Row row; range) {
-      string mess = "MID " ~ to!string(row[0]) ~ " not in table Source!";
+      // dfmt off
+      string mess	=	"MID "
+      				~	to!string(row[0])
+      				~	" not in table Source!";
+      // dfmt on
       log ~= mess;
       rc++;
    }

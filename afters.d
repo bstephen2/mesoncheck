@@ -12,7 +12,12 @@ uint check_afters(uint id) {
    string[] log;
    Connection conn;
    ResultRange range;
-   string sql_1 = "SELECT afters.pid, afters.aid FROM afters LEFT JOIN problem " ~ "ON afters.pid = problem.eid AND afters.aid = problem.pid " ~ "WHERE problem.pid IS NULL " ~ "ORDER BY afters.pid, afters.aid";
+   // dfmt off
+   string sql_1	=	"SELECT afters.pid, afters.aid FROM afters LEFT JOIN problem "
+   					~	"ON afters.pid = problem.eid AND afters.aid = problem.pid "
+   					~	"WHERE problem.pid IS NULL "
+   					~	"ORDER BY afters.pid, afters.aid";
+   // dfmt on
 
    auto connectionStr = "host=localhost;port=3306;user=bstephen;pwd=rice37;db=meson";
    conn = new Connection(connectionStr);
@@ -25,8 +30,13 @@ uint check_afters(uint id) {
    range = conn.query(sql_1);
 
    foreach (Row row; range) {
-      string mess = "PID AID (" ~ to!string(row[0]) ~ "," ~ to!string(
-            row[1]) ~ ") not in table Problem!";
+      // dfmt off
+      string mess	=	"PID AID ("
+      				~	to!string(row[0])
+      				~	","
+      				~	to!string(row[1])
+      				~	") not in table Problem!";
+      // dfmt on
       log ~= mess;
       rc++;
    }
