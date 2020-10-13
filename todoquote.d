@@ -12,9 +12,12 @@ uint check_todoquote(uint id) {
    string[] log;
    Connection conn;
    ResultRange range;
-   string sql_1 = "SELECT todoquote.mid FROM todoquote LEFT JOIN source "
-      ~ "ON todoquote.mid = source.sid "
-      ~ "WHERE source.sid IS NULL " ~ "ORDER BY todoquote.mid";
+   // dfmt off
+   string sql_1	=	"SELECT todoquote.mid FROM todoquote LEFT JOIN source "
+      				~	"ON todoquote.mid = source.sid "
+      				~	"WHERE source.sid IS NULL "
+      				~	"ORDER BY todoquote.mid";
+   // dfmt on
 
    auto connectionStr = "host=localhost;port=3306;user=bstephen;pwd=rice37;db=meson";
    conn = new Connection(connectionStr);
@@ -26,7 +29,11 @@ uint check_todoquote(uint id) {
    range = conn.query(sql_1);
 
    foreach (Row row; range) {
-      string mess = "MID " ~ to!string(row[0]) ~ " not in table Source!";
+      // dfmt off
+      string mess	=	"MID "
+      				~	to!string(row[0])
+      				~	" not in table Source!";
+      // dfmt on
       log ~= mess;
       rc++;
    }

@@ -29,7 +29,7 @@ uint check_award(uint id) {
    range = conn.query(sql_1);
 
    foreach (Row row; range) {
-   	// dfmt off
+      // dfmt off
       string mess	=	"AID "
       				~	to!string(row[0])
       				~	"("

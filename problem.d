@@ -70,7 +70,7 @@ uint check_problem(uint id) {
    range = conn.query(sql_1);
 
    foreach (Row row; range) {
-   	// dfmt off
+      // dfmt off
       string mess	=	"PID "
       				~	to!string(row[0])
       				~	" not in table Classol!";
@@ -88,7 +88,7 @@ uint check_problem(uint id) {
    range = conn.query(sql_2);
 
    foreach (Row row; range) {
-   	// dfmt off
+      // dfmt off
       string mess	=	"PID "
       				~	to!string(row[0])
       				~	" not in table ProblemComposer!";
@@ -106,7 +106,7 @@ uint check_problem(uint id) {
    range = conn.query(sql_3);
 
    foreach (Row row; range) {
-   	// dfmt off
+      // dfmt off
       string mess	=	"SID "
       				~	to!string(row[0])
       				~	" not in table Source!";
@@ -124,7 +124,7 @@ uint check_problem(uint id) {
    range = conn.query(sql_4);
 
    foreach (Row row; range) {
-   	// dfmt off
+      // dfmt off
       string mess	=	"AID "
       				~	to!string(row[0])
       				~	" not in table Award!";
@@ -144,7 +144,7 @@ uint check_problem(uint id) {
    range = conn.query(sql_5a);
 
    foreach (Row row; range) {
-   	// dfmt off
+      // dfmt off
       string mess	=	"PID "
       				~	to!string(row[0])
       				~	" (EID "
@@ -164,7 +164,7 @@ uint check_problem(uint id) {
    range = conn.query(sql_6);
 
    foreach (Row row; range) {
-   	// dfmt off
+      // dfmt off
       string mess	=	"PID "
       				~	to!string(row[0])
       				~	" version EID "
@@ -184,7 +184,7 @@ uint check_problem(uint id) {
    range = conn.query(sql_7);
 
    foreach (Row row; range) {
-   	// dfmt off
+      // dfmt off
       string mess	=	"PID "
       				~	to!string(row[0])
       				~	" after EID "

@@ -54,7 +54,7 @@ uint check_nots(uint id) {
    range = conn.query(sql_1);
 
    foreach (Row row; range) {
-   	// dfmt off
+      // dfmt off
       string mess	=	"PID "
       				~	to!string(row[0])
       				~	" not in table Problem!";
@@ -71,7 +71,7 @@ uint check_nots(uint id) {
    range = conn.query(sql_2);
 
    foreach (Row row; range) {
-   	// dfmt off
+      // dfmt off
       string mess	=	"AID "
       				~	to!string(row[0])
       				~	" not in table Problem!";
@@ -89,7 +89,7 @@ uint check_nots(uint id) {
    range = conn.query(sql_3);
 
    foreach (Row row; range) {
-   	// dfmt off
+      // dfmt off
       string mess	=	"["
       				~	to!string(row[0])
       				~	", "
@@ -109,7 +109,7 @@ uint check_nots(uint id) {
    range = conn.query(sql_4);
 
    foreach (Row row; range) {
-   	// dfmt off
+      // dfmt off
       string mess	=	"["
       				~	to!string(row[0])
       				~	", "
@@ -129,7 +129,7 @@ uint check_nots(uint id) {
    range = conn.query(sql_5);
 
    foreach (Row row; range) {
-   	// dfmt off
+      // dfmt off
       string mess	=	"["
       				~	to!string(row[0])
       				~	", "
@@ -149,7 +149,7 @@ uint check_nots(uint id) {
    range = conn.query(sql_6);
 
    foreach (Row row; range) {
-   	// dfmt off
+      // dfmt off
       string mess	=	"["
       				~	to!string(row[0])
       				~	", "
@@ -168,7 +168,7 @@ uint check_nots(uint id) {
    range = conn.query(sql_7);
 
    foreach (Row row; range) {
-   	// dfmt off
+      // dfmt off
       string mess	=	"["
       				~	to!string(row[1])
       				~	","

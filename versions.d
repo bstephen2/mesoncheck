@@ -12,7 +12,12 @@ uint check_versions(uint id) {
    string[] log;
    ResultRange range;
    Connection conn;
-   string sql_1 = "SELECT versions.pid, versions.aid FROM versions LEFT JOIN problem " ~ "ON versions.pid = problem.eid AND versions.aid = problem.pid " ~ "WHERE problem.pid IS NULL " ~ "ORDER BY versions.pid, versions.aid";
+   // dfmt off
+   string sql_1	=	"SELECT versions.pid, versions.aid FROM versions LEFT JOIN problem "
+   					~	"ON versions.pid = problem.eid AND versions.aid = problem.pid "
+   					~	"WHERE problem.pid IS NULL "
+   					~	"ORDER BY versions.pid, versions.aid";
+   // dfmt on
 
    auto connectionStr = "host=localhost;port=3306;user=bstephen;pwd=rice37;db=meson";
    conn = new Connection(connectionStr);
@@ -24,8 +29,13 @@ uint check_versions(uint id) {
    range = conn.query(sql_1);
 
    foreach (Row row; range) {
-      string mess = "PID AID (" ~ to!string(row[0]) ~ "," ~ to!string(
-            row[1]) ~ ") not in table Problem!";
+      // dfmt off
+      string mess	=	"PID AID ("
+      				~	to!string(row[0])
+      				~	", "
+      				~	to!string(row[1])
+      				~	") not in table Problem!";
+      // dfmt on
       log ~= mess;
       rc++;
    }

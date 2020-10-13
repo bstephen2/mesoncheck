@@ -84,7 +84,11 @@ uint check_sants(uint id) {
    range = conn.query(sql_1);
 
    foreach (Row row; range) {
-      string mess = "PID " ~ to!string(row[0]) ~ " not in table Problem";
+      // dfmt off
+      string mess	=	"PID "
+      				~	to!string(row[0])
+      				~	" not in table Problem";
+      // dfmt on
       log ~= mess;
       rc++;
    }
@@ -97,7 +101,11 @@ uint check_sants(uint id) {
    range = conn.query(sql_2);
 
    foreach (Row row; range) {
-      string mess = "SAID " ~ to!string(row[0]) ~ " not in table Problem";
+      // dfmt off
+      string mess	=	"SAID "
+      				~	to!string(row[0])
+      				~	" not in table Problem";
+      // dfmt on
       log ~= mess;
       rc++;
    }
